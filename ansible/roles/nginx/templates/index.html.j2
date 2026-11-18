@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <title>{{ inventory_hostname }}</title>
+  <style>
+    body { font-family: sans-serif; background: #0f172a; color: #e2e8f0;
+           display: grid; place-items: center; height: 100vh; margin: 0; }
+    .card { background: #1e293b; padding: 2rem 3rem; border-radius: 12px; }
+    h1 { color: #38bdf8; margin-top: 0; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Привіт з {{ inventory_hostname }}!</h1>
+    <p>IP: {{ ansible_host }}</p>
+    <p>ОС: {{ ansible_distribution }} {{ ansible_distribution_version }}</p>
+    <p>Налаштовано через Ansible</p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+---
+- name: Встановити Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: present
+
+- name: Розмістити стартову сторінку
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: "0644"
+
+- name: Запустити Nginx і додати в автозапуск
+  ansible.builtin.service:
+    name: nginx
+    state: started
+    enabled: true
+
+- name: Дозволити HTTP у фаєрволі
+  community.general.ufw:
+    rule: allow
+    port: "80"
+    proto: tcp

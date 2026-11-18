@@ -1,0 +1,53 @@
+---
+- name: Встановити PostgreSQL
+  ansible.builtin.apt:
+    name:
+      - postgresql
+      - python3-psycopg2   # потрібен модулям community.postgresql
+    state: present
+
+- name: Слухати підключення на всіх інтерфейсах
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ postgres_version }}/main/postgresql.conf"
+    regexp: "^#?listen_addresses"
+    line: "listen_addresses = '*'"
+  notify: Restart postgresql
+
+- name: Дозволити підключення з мережі лабораторії
+  ansible.builtin.lineinfile:
+    path: "/etc/postgresql/{{ postgres_version }}/main/pg_hba.conf"
+    line: "host  all  all  {{ lab_network }}  scram-sha-256"
+  notify: Restart postgresql
+
+- name: Запустити PostgreSQL
+  ansible.builtin.service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Створити базу даних
+  become_user: postgres
+  community.postgresql.postgresql_db:
+    name: "{{ app_db_name }}"
+
+- name: Створити користувача БД
+  become_user: postgres
+  community.postgresql.postgresql_user:
+    name: "{{ app_db_user }}"
+    password: "{{ app_db_password }}"
+  no_log: true
+
+- name: Зробити користувача власником бази
+  become_user: postgres
+  community.postgresql.postgresql_owner:
+    db: "{{ app_db_name }}"
+    new_owner: "{{ app_db_user }}"
+    obj_name: "{{ app_db_name }}"
+    obj_type: database
+
+- name: Дозволити порт 5432 лише з мережі лабораторії
+  community.general.ufw:
+    rule: allow
+    port: "5432"
+    proto: tcp
+    from_ip: "{{ lab_network }}"

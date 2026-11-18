@@ -1,0 +1,22 @@
+---
+# Головний playbook: налаштовує всю лабораторію.
+# Запуск з машини control:  ansible-playbook site.yml
+
+- name: Базове налаштування всіх серверів
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Веб-сервери (Nginx + Docker)
+  hosts: web
+  become: true
+  roles:
+    - nginx
+    - docker
+
+- name: Сервер бази даних (PostgreSQL)
+  hosts: database
+  become: true
+  roles:
+    - postgres

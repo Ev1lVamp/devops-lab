@@ -1,0 +1,7 @@
+---
+postgres_version: 14          # версія в Ubuntu 22.04
+app_db_name: appdb
+app_db_user: appuser
+# УВАГА: пароль відкритим текстом - лише для старту.
+# Завдання з плану навчання: перенести його в ansible-vault.
+app_db_password: "ChangeMe123"
